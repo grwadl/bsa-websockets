@@ -1,15 +1,8 @@
 import {Server} from 'socket.io';
-export default (io: Server) => {
-	let users: string[] = [];
-	io.on('connection', socket => {
-		const username: string = (socket.handshake.query.username as string);
-		!users.includes(username)
-			? users.push(username)
-			: socket.emit('error_username', 'error');
+import login from './namespaces/loginUser'
+import rooms from './namespaces/rooms';
 
-		socket.on('disconnect', () => {
-			const username: string = (socket.handshake.query.username as string);
-			 users = users.filter(item => item !== username);
-		})
-	});
+export default (io: Server) => {
+	login(io.of('/login'));
+	rooms(io.of('/rooms'))
 };
