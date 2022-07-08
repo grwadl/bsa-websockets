@@ -1,8 +1,15 @@
-import { Server } from 'socket.io';
-import * as config from './config';
-
+import {Server} from 'socket.io';
 export default (io: Server) => {
+	let users: string[] = [];
 	io.on('connection', socket => {
-		const username = socket.handshake.query.username;
+		const username: string = (socket.handshake.query.username as string);
+		!users.includes(username)
+			? users.push(username)
+			: socket.emit('error_username', 'error');
+
+		socket.on('disconnect', () => {
+			const username: string = (socket.handshake.query.username as string);
+			 users = users.filter(item => item !== username);
+		})
 	});
 };
