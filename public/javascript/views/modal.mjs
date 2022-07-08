@@ -19,8 +19,8 @@ const showInputModal = ({ title, onChange = () => {}, onSubmit = () => {} }) => 
 	rootElement.append(modalElement);
 
 	submitButton.addEventListener('click', () => {
-		modalElement.remove();
 		onSubmit();
+		modalElement.remove();
 	});
 	inputElement.addEventListener('change', e => onChange(e.target.value));
 };
