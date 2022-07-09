@@ -1,5 +1,3 @@
-import LoginRoutes from "../../routes/loginRoutes";
-
 interface IRoom {
     name: string,
     members: string[]
@@ -25,6 +23,13 @@ export default io => {
             const index = rooms.findIndex(room => room.name === roomName);
             rooms[index].members.push(username);
             io.emit('join_room_done', { room : rooms[index] })
+        })
+
+        socket.on('leave_room', roomName => {
+            const index = rooms.findIndex(room => room.name === roomName);
+            rooms[index].members = rooms[index].members.filter(member => member !== username)
+            io.emit('leave_room_done', { room : rooms[index] })
+            //TODO: сделать дейтсвие для обновки рума отдельно
         })
     })
 };
