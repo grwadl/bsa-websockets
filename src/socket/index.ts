@@ -8,7 +8,8 @@ interface IMember {
 
 interface IRoom {
 	name: string,
-	members: IMember[]
+	members: IMember[],
+	winners?: string[]
 }
 let rooms: IRoom[] = [];
 
@@ -48,7 +49,7 @@ export default (io: Server) => {
 
 		socket.on('change_state', (roomName: string) => {
 			const index = rooms.findIndex(room => room.name === roomName);
-			rooms[index].members = rooms[index].members.map(member => member.username !== username ? member : {
+			if (index>=0) rooms[index].members = rooms[index].members.map(member => member.username !== username ? member : {
 				...member,
 				isReady : !member.isReady
 			});
@@ -95,7 +96,28 @@ export default (io: Server) => {
 		socket.on('choose_id', roomName =>{
 			const rndInt = Math.floor(Math.random() * 7);
 			io.sockets.in(roomName).volatile.emit('generated_id', rndInt);
+		});
+
+		socket.on('pressed_key', (props) => {
+			io.sockets.in(props.roomName).emit('change_progressBar', {username, progress: props.percentage})
+		});
+
+		socket.on('finished_game', (roomName: string) => {
+			const index = rooms.findIndex(room => room.name === roomName);
+			if(rooms[index].winners) {
+				rooms[index]?.winners?.push(username);
+			}
+			else {
+				rooms[index].winners = [username]
+			}
+			console.log(rooms[index]?.winners?.length)
+			console.log(rooms[index]?.members?.length)
+			if(rooms[index]?.winners?.length === rooms[index]?.members?.length) {
+				io.sockets.in(roomName).emit('show_result', rooms[index]?.winners);
+			}
 		})
+
+		socket.on('test_emit', () => console.log('success'))
 
 		socket.on('disconnect', () => {
 			const username: string = (socket.handshake.query.username as string);

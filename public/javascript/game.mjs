@@ -10,7 +10,9 @@ import {changeStateHandler} from "./handlers/rooms/changeStatehandler.mjs";
 import {startTimerHandler} from "./handlers/rooms/startTimerHandler.mjs";
 import {changeTimerHandler} from "./handlers/rooms/changeTimerHandler.mjs";
 import {hideRoomHandler} from "./handlers/rooms/hideRoomhandler.mjs";
-import {getTextHandler} from "./handlers/rooms/getTextHandler.mjs";
+import {startGameHandler} from "./handlers/game/getTextHandler.mjs";
+import {setProgress} from "./views/user.mjs";
+import {showResultsModal} from "./views/modal.mjs";
 
 const username = sessionStorage.getItem('username');
 
@@ -28,7 +30,7 @@ const buttonReady = document.querySelector('#ready-btn');
 buttonReady.addEventListener('click', () => {
 	const roomName = document.querySelector('#room-name').innerText;
 	socket.emit('change_state', roomName);
-})
+});
 
 socket.on('error_username', wrongUsernameHandler);
 socket.on('get_rooms', getRoomsHandler);
@@ -40,4 +42,6 @@ socket.on('change_state_done', changeStateHandler);
 socket.on('timer_render', startTimerHandler);
 socket.on('start_timer_count', changeTimerHandler);
 socket.on('hide_room', hideRoomHandler);
-socket.once('generated_id', getTextHandler)
+socket.once('generated_id', startGameHandler);
+socket.on('change_progressBar', setProgress);
+socket.on('show_result', users => showResultsModal({usersSortedArray: users}))
