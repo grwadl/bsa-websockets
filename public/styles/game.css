@@ -72,3 +72,19 @@
 .finished {
   background-color:greenyellow !important;
 }
+
+.user-item {
+  height: 20px;
+}
+
+.span-ready {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: red;
+}
+
+.span-ready.ready {
+  background-color: green;
+}
