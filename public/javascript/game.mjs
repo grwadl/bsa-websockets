@@ -15,6 +15,7 @@ import {setProgress} from "./views/user.mjs";
 import {gamerCountHandler} from "./handlers/game/gamerCountHandler.mjs";
 import {onCloseModal} from "./handlers/game/onCloseModal.mjs";
 import {timeOverHandler} from "./handlers/game/timeOverhandler.mjs";
+import {wrongRoomHandler} from "./handlers/rooms/createRoom/wrongRoomHandler.mjs";
 
 const username = sessionStorage.getItem('username');
 
@@ -49,3 +50,4 @@ socket.on('change_progressBar', setProgress);
 socket.on('start_game_timer_count', gamerCountHandler);
 socket.on('show_result', onCloseModal);
 socket.on('time_is_over', timeOverHandler);
+socket.on('wrong_name_room', wrongRoomHandler)
