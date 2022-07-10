@@ -1,5 +1,5 @@
 import {Server} from 'socket.io';
-import {SECONDS_TIMER_BEFORE_START_GAME} from "./config";
+import {SECONDS_FOR_GAME, SECONDS_TIMER_BEFORE_START_GAME} from "./config";
 
 interface IMember {
 	username: string,
@@ -9,7 +9,8 @@ interface IMember {
 interface IRoom {
 	name: string,
 	members: IMember[],
-	winners?: string[]
+	winners?: string[],
+	chosedId: number | boolean
 }
 let rooms: IRoom[] = [];
 
@@ -26,7 +27,7 @@ export default (io: Server) => {
 			if (rooms.find(item => item.name === room)) {
 				return;
 			}
-			rooms.push({name: room, members: [{username, isReady: false}]});
+			rooms.push({name: room, members: [{username, isReady: false}], chosedId: false});
 			io.sockets.in('lobby').emit('add_room', {name: room, members: [username]});
 			const index = rooms.findIndex(item => item.name === room);
 			io.to(socket.id).emit('join_room_done', { room : rooms[index] });
@@ -53,7 +54,7 @@ export default (io: Server) => {
 				...member,
 				isReady : !member.isReady
 			});
-			const changedUser = rooms[index].members.find(item => item.username === username);
+			const changedUser = rooms[index].members?.find(item => item.username === username);
 			io.sockets.in(roomName).emit('change_state_done', changedUser);
 			if(rooms[index].members.filter(item => item.isReady)?.length === rooms[index].members.length && rooms[index].members.length >= 2) {
 				io.sockets.in(roomName).emit('timer_render');
@@ -69,6 +70,9 @@ export default (io: Server) => {
 
 		socket.on('start_timer', (roomName: string) => {
 			io.sockets.in('lobby').emit('hide_room', roomName);
+			const index = rooms.findIndex(room => room.name === roomName);
+			rooms[index].winners = [];
+			rooms[index].chosedId = false;
 			let timer = SECONDS_TIMER_BEFORE_START_GAME;
 			function intervalTimer (this: any) {
 				io.to(socket.id).emit('start_timer_count', timer--);
@@ -94,8 +98,15 @@ export default (io: Server) => {
 		})
 
 		socket.on('choose_id', roomName =>{
+			const index = rooms.findIndex(room => room.name === roomName);
+			if(rooms[index].chosedId){
+				 io.to(socket.id).emit('generated_id', rooms[index].chosedId);
+				return
+			}
 			const rndInt = Math.floor(Math.random() * 7);
-			io.sockets.in(roomName).volatile.emit('generated_id', rndInt);
+			rooms[index].chosedId = rndInt;
+			io.to(socket.id).emit('generated_id', rndInt);
+			return
 		});
 
 		socket.on('pressed_key', (props) => {
@@ -110,14 +121,24 @@ export default (io: Server) => {
 			else {
 				rooms[index].winners = [username]
 			}
-			console.log(rooms[index]?.winners?.length)
-			console.log(rooms[index]?.members?.length)
 			if(rooms[index]?.winners?.length === rooms[index]?.members?.length) {
 				io.sockets.in(roomName).emit('show_result', rooms[index]?.winners);
 			}
 		})
 
-		socket.on('test_emit', () => console.log('success'))
+		socket.on('start_game_timer', (roomName) => {
+			let timer = SECONDS_FOR_GAME;
+			const index = rooms.findIndex(room => room.name === roomName);
+			function intervalTimer (this: any) {
+				--timer;
+				if (timer < 0 || rooms[index]?.winners?.length === rooms[index]?.members?.length) {
+					clearInterval(this);
+					return;
+				}
+				io.to(socket.id).emit('start_game_timer_count', timer);
+			}
+			setInterval(intervalTimer, 1000);
+		});
 
 		socket.on('disconnect', () => {
 			const username: string = (socket.handshake.query.username as string);
