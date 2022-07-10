@@ -142,9 +142,17 @@ export default (io: Server) => {
 
 		socket.on('disconnect', () => {
 			const username: string = (socket.handshake.query.username as string);
+			const potentialRoom = rooms.find(room => room.members.find(item => item.username === username));
 			rooms.forEach(item => item.members = item.members.filter(member => member.username !== username));
-			rooms = rooms.filter(item => item.members.length > 0);
+			rooms.forEach(item => item.winners = item.winners?.filter(member => member !== username));
+			if(potentialRoom ) {
+				io.sockets.in(potentialRoom.name).emit('refresh_room_info', {room: potentialRoom});
+						if(potentialRoom?.members?.length === potentialRoom?.winners?.length) {
+							io.sockets.in(potentialRoom.name).emit('show_result', potentialRoom!.winners);
+						}
+					}
 			users = users.filter(item => item !== username);
+			rooms = rooms.filter(item => item.members.length > 0);
 			io.sockets.in('lobby').emit('get_rooms', rooms)
 		})
 	});
