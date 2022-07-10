@@ -1,4 +1,4 @@
-import { addClass } from '../helpers/domHelper.mjs';
+import {addClass, removeClass} from '../helpers/domHelper.mjs';
 import { createElement } from '../helpers/domHelper.mjs';
 
 const appendUserElement = ({ username, ready, isCurrentUser }) => {
@@ -63,6 +63,7 @@ const setProgress = ({ username, progress }) => {
 		addClass(progressElement, 'finished');
 	} else {
 		progressElement.style.width = `${progress}%`;
+		removeClass(progressElement, 'finished');
 	}
 };
 

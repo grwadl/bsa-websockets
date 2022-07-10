@@ -1,10 +1,19 @@
 
-import {appendUserElement} from "../../views/user.mjs";
+import {appendUserElement, setProgress} from "../../views/user.mjs";
 import {updateNumberOfUsersInRoom} from "../../views/room.mjs";
+import {removeClass} from "../../helpers/domHelper.mjs";
+
+const memberRefresher = member => {
+    const username = sessionStorage.getItem('username');
+    appendUserElement({username: member.username, ready: member.isReady, isCurrentUser: username.toString() === member.username.toString()});
+    setProgress({username: member.username, progress: member.percent})
+}
 
 export const refreshRoomHandler = (room) => {
     updateNumberOfUsersInRoom({name: room.room.name, numberOfUsers: room.room.members.length});
+    const roomItem = document.querySelector(`[data-room-name='${room.room.name}']`);
+    removeClass(roomItem, 'display-none');
     const userList = document.querySelector('#users-wrapper');
     userList.innerHTML = '';
-    room.room.members.forEach(member => appendUserElement({username: member.username, ready: member.isReady, isCurrentUser: false}));
+    room.room.members.forEach(member => memberRefresher(member));
 }
