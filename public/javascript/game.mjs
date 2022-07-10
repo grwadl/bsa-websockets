@@ -12,9 +12,9 @@ import {changeTimerHandler} from "./handlers/rooms/changeTimerHandler.mjs";
 import {hideRoomHandler} from "./handlers/rooms/hideRoomhandler.mjs";
 import {startGameHandler} from "./handlers/game/getTextHandler.mjs";
 import {setProgress} from "./views/user.mjs";
-import {showResultsModal} from "./views/modal.mjs";
 import {gamerCountHandler} from "./handlers/game/gamerCountHandler.mjs";
 import {onCloseModal} from "./handlers/game/onCloseModal.mjs";
+import {timeOverHandler} from "./handlers/game/timeOverhandler.mjs";
 
 const username = sessionStorage.getItem('username');
 
@@ -46,5 +46,6 @@ socket.on('start_timer_count', changeTimerHandler);
 socket.on('hide_room', hideRoomHandler);
 socket.on('generated_id', startGameHandler);
 socket.on('change_progressBar', setProgress);
-socket.on('start_game_timer_count', gamerCountHandler)
+socket.on('start_game_timer_count', gamerCountHandler);
 socket.on('show_result', onCloseModal);
+socket.on('time_is_over', timeOverHandler);

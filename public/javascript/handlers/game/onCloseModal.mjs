@@ -12,5 +12,6 @@ const onClose = () => {
 
 export const onCloseModal = users => {
     document.querySelector('#text-container').innerText = '';
-    showResultsModal({usersSortedArray: users, onClose});
+    const usersSortedArray = users.map(item => item.username);
+    showResultsModal({usersSortedArray, onClose});
 }

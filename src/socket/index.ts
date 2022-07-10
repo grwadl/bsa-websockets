@@ -3,13 +3,15 @@ import {SECONDS_FOR_GAME, SECONDS_TIMER_BEFORE_START_GAME} from "./config";
 
 interface IMember {
 	username: string,
-	isReady: boolean
+	isReady: boolean,
+	percent: number
 }
+
 
 interface IRoom {
 	name: string,
 	members: IMember[],
-	winners?: string[],
+	winners?: IMember[],
 	chosedId: number | boolean
 }
 let rooms: IRoom[] = [];
@@ -27,7 +29,7 @@ export default (io: Server) => {
 			if (rooms.find(item => item.name === room)) {
 				return;
 			}
-			rooms.push({name: room, members: [{username, isReady: false}], chosedId: false});
+			rooms.push({name: room, members: [{username, isReady: false, percent: 0}], chosedId: false});
 			io.sockets.in('lobby').emit('add_room', {name: room, members: [username]});
 			const index = rooms.findIndex(item => item.name === room);
 			io.to(socket.id).emit('join_room_done', { room : rooms[index] });
@@ -40,7 +42,7 @@ export default (io: Server) => {
 			rooms.forEach(item => item.members = item.members.filter(member => member.username !== username));
 			const index = rooms.findIndex(room => room.name === roomName);
 			if (rooms[index].members.length<5) {
-				rooms[index].members.push({username, isReady: false});
+				rooms[index].members.push({username, isReady: false, percent: 0});
 				socket.join(roomName);
 				socket.leave('lobby');
 				io.to(socket.id).emit('join_room_done', {room: rooms[index]})
@@ -110,20 +112,19 @@ export default (io: Server) => {
 		});
 
 		socket.on('pressed_key', (props) => {
+			const index = rooms.findIndex(room => room.name === props.roomName);
+			rooms[index].members = rooms[index].members.map(item => item.username === username? {...item, percent: props.percentage} : item)
 			io.sockets.in(props.roomName).emit('change_progressBar', {username, progress: props.percentage})
 		});
 
 		socket.on('finished_game', (roomName: string) => {
 			const index = rooms.findIndex(room => room.name === roomName);
-			if(rooms[index].winners) {
-				rooms[index]?.winners?.push(username);
-			}
-			else {
-				rooms[index].winners = [username]
-			}
-			if(rooms[index]?.winners?.length === rooms[index]?.members?.length) {
+			if(rooms[index].winners)
+				rooms[index]?.winners?.push({username, isReady:true, percent: 0});
+			else
+				rooms[index].winners = [{username, isReady:true, percent: 0}];
+			if (rooms[index]?.winners?.length === rooms[index]?.members?.length)
 				io.sockets.in(roomName).emit('show_result', rooms[index]?.winners);
-			}
 		})
 
 		socket.on('start_game_timer', (roomName) => {
@@ -131,7 +132,13 @@ export default (io: Server) => {
 			const index = rooms.findIndex(room => room.name === roomName);
 			function intervalTimer (this: any) {
 				--timer;
-				if (timer < 0 || rooms[index]?.winners?.length === rooms[index]?.members?.length) {
+				if (timer < 0) {
+					clearInterval(this);
+					io.to(socket.id).emit('time_is_over');
+					rooms[index].winners =  rooms[index].members.sort((a, b) => b.percent - a.percent)
+					return;
+				}
+				if(rooms[index]?.winners?.length === rooms[index]?.members?.length) {
 					clearInterval(this);
 					return;
 				}
@@ -140,16 +147,20 @@ export default (io: Server) => {
 			setInterval(intervalTimer, 1000);
 		});
 
+		socket.on('ready_to_show_result', roomName => {
+			const index = rooms.findIndex(room => room.name === roomName);
+			io.to(socket.id).emit('show_result', rooms[index]?.winners);
+		})
+
 		socket.on('disconnect', () => {
 			const username: string = (socket.handshake.query.username as string);
 			const potentialRoom = rooms.find(room => room.members.find(item => item.username === username));
 			rooms.forEach(item => item.members = item.members.filter(member => member.username !== username));
-			rooms.forEach(item => item.winners = item.winners?.filter(member => member !== username));
-			if(potentialRoom ) {
+			rooms.forEach(item => item.winners = item.winners?.filter(member => member.username !== username));
+			if (potentialRoom) {
 				io.sockets.in(potentialRoom.name).emit('refresh_room_info', {room: potentialRoom});
-						if(potentialRoom?.members?.length === potentialRoom?.winners?.length) {
+						if(potentialRoom?.members?.length === potentialRoom?.winners?.length)
 							io.sockets.in(potentialRoom.name).emit('show_result', potentialRoom!.winners);
-						}
 					}
 			users = users.filter(item => item !== username);
 			rooms = rooms.filter(item => item.members.length > 0);
