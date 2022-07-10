@@ -1,11 +1,11 @@
 export const texts = [
-  "Text for typing #1",
-  "Text for typing #2",
-  "Text for typing #3",
-  "Text for typing #4",
-  "Text for typing #5",
-  "Text for typing #6",
-  "Text for typing #7",
+  "Text1",
+  "Text2",
+  "Text3",
+  "Text4",
+  "Text5",
+  "Text6",
+  "Text7",
 ];
 
 export default { texts };

@@ -1,16 +1,19 @@
-import {createElement} from "../../helpers/domHelper.mjs";
+
+import {appendUserElement, setProgress} from "../../views/user.mjs";
+import {updateNumberOfUsersInRoom} from "../../views/room.mjs";
+import {removeClass} from "../../helpers/domHelper.mjs";
+
+const memberRefresher = member => {
+    const username = sessionStorage.getItem('username');
+    appendUserElement({username: member.username, ready: member.isReady, isCurrentUser: username.toString() === member.username.toString()});
+    setProgress({username: member.username, progress: member.percent})
+}
 
 export const refreshRoomHandler = (room) => {
-const roomToRefresh = document.querySelector(`[data-room-name='${room.room.name}']`);
-    roomToRefresh.childNodes[1].innerText = room.room.members.length + ' connected';
+    updateNumberOfUsersInRoom({name: room.room.name, numberOfUsers: room.room.members.length});
+    const roomItem = document.querySelector(`[data-room-name='${room.room.name}']`);
+    removeClass(roomItem, 'display-none');
     const userList = document.querySelector('#users-wrapper');
     userList.innerHTML = '';
-    room.room.members.forEach(member => {
-        const readyCircle = createElement({tagName: 'span', className: 'span-ready'});
-        member.isReady ? readyCircle.classList.add('ready') : null;
-        const userName = createElement({tagName: 'span', className: 'username'});
-        userName.innerText = member.username;
-        const item = createElement({tagName: 'div', className:'user-item', attributes: {'user-name': member.username}, innerElements: [userName, readyCircle] });
-        userList.appendChild(item);
-    });
+    room.room.members.forEach(member => memberRefresher(member));
 }
