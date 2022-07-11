@@ -4,7 +4,7 @@
   "description": "Starter for HTTP / WS homework. Binary Studio Academy",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/server.ts",
+    "start": "node src/server.ts",
     "build": "tsc"
   },
   "keywords": [
