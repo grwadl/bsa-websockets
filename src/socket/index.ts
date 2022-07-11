@@ -103,11 +103,12 @@ export default (io: Server) => {
 
         socket.on('choose_id', (roomName: string) => {
             const index: number = rooms.findIndex(room => room.name === roomName);
-            if (rooms[index].chosedId) //если айдишник текста уже был сгенерирован отправляем
-                return io.to(socket.id).emit('generated_id', rooms[index].chosedId);
+            if (rooms[index].chosedId){ //если айдишник текста уже был сгенерирован отправляем
+                return;
+            }
             const rndInt: number = Math.floor(Math.random() * 7);
             rooms[index].chosedId = rndInt;
-            io.to(socket.id).emit('generated_id', rndInt);
+            io.sockets.in(roomName).emit('generated_id', rndInt);
         });
 
         socket.on('pressed_key', ({percentage, roomName}) => {
@@ -167,6 +168,7 @@ export default (io: Server) => {
 
         socket.on('change_state_false',( roomName: string) => {
             const index: number = rooms.findIndex(room => room.name === roomName);
+            rooms[index].winners = [];
             if (index >= 0) rooms[index].members = rooms[index].members.map(member => member.username !== username ? member : {
                 ...member,
                 isReady: false
