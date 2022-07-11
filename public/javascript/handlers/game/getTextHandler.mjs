@@ -18,7 +18,7 @@ export let reference;
 export const startGameHandler = id => {
     const textWrapper = document.querySelector('#text-container');
     let text;
-    fetch(`http://localhost:3002/game/texts/${id}`)
+    fetch(`https://bsa-websockets.herokuapp.com/game/texts/${id}`)
         .then(res => res.json())
         .then(res => text = showText(res, textWrapper).split(''));
     let counter = 0;
