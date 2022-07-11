@@ -1,8 +1,8 @@
 
-import {appendUserElement, setProgress} from "../../views/user.mjs";
-import {updateNumberOfUsersInRoom} from "../../views/room.mjs";
-import {removeClass} from "../../helpers/domHelper.mjs";
-import {socket} from "../../game.mjs";
+import {appendUserElement, setProgress} from "../../../views/user.mjs";
+import {updateNumberOfUsersInRoom} from "../../../views/room.mjs";
+import {removeClass} from "../../../helpers/domHelper.mjs";
+import {socket} from "../../../game.mjs";
 
 const memberRefresher = member => {
     const username = sessionStorage.getItem('username');

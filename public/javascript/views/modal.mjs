@@ -1,9 +1,10 @@
-import { createElement } from '../helpers/domHelper.mjs';
+import {addClass, createElement, removeClass} from '../helpers/domHelper.mjs';
 
 const showInputModal = ({ title, onChange = () => {}, onSubmit = () => {} }) => {
 	const rootElement = document.querySelector('#root');
-
+	const roomsWrapper = document.querySelector('#rooms-page');
 	const modalElement = createModalElement(title);
+	addClass(roomsWrapper, 'opened-modal')
 
 	const submitButton = createElement({
 		tagName: 'button',
@@ -19,6 +20,7 @@ const showInputModal = ({ title, onChange = () => {}, onSubmit = () => {} }) => 
 	rootElement.append(modalElement);
 
 	submitButton.addEventListener('click', () => {
+		removeClass(roomsWrapper, 'opened-modal');
 		onSubmit();
 		modalElement.remove();
 	});
@@ -66,6 +68,8 @@ const showResultsModal = ({ usersSortedArray, onClose = () => {} }) => {
 
 const showMessageModal = ({ message, onClose = () => {} }) => {
 	const rootElement = document.querySelector('#root');
+	const roomsWrapper = document.querySelector('#rooms-page');
+	addClass(roomsWrapper, 'opened-modal')
 
 	const modalElement = createModalElement(message);
 
@@ -79,6 +83,7 @@ const showMessageModal = ({ message, onClose = () => {} }) => {
 	rootElement.append(modalElement);
 
 	closeButton.addEventListener('click', () => {
+		removeClass(roomsWrapper, 'opened-modal');
 		modalElement.remove();
 		onClose();
 	});

@@ -7,10 +7,13 @@ const showText = (text, textWrapper) => {
         const span = createElement({tagName:'span'});
         span.innerText = symbol;
         textWrapper.appendChild(span);
-    })
+    });
+    textWrapper.firstChild.classList.add('next')
     removeClass(textWrapper, 'display-none');
     return text;
 }
+
+export let reference;
 
 export const startGameHandler = id => {
     const textWrapper = document.querySelector('#text-container');
@@ -23,18 +26,27 @@ export const startGameHandler = id => {
     const gameTimer = document.querySelector('#game-timer');
     removeClass(gameTimer, 'display-none');
     socket.emit('start_game_timer', roomName);
-    const keyPressHandler = e => {
+    reference = e => {
+        console.log('click')
         if(e.key === text[counter]) {
             textWrapper.childNodes[counter].classList.add('green');
+            textWrapper.childNodes[counter].classList.remove('next');
             socket.emit('pressed_key', {percentage: (counter+1)*100 / (text.length), roomName});
             counter++;
+            textWrapper.childNodes[counter]?.classList.add('next');
         }
         if(counter === text?.length) {
-            document.removeEventListener('keypress', keyPressHandler)
+            const seconds = document.querySelector('#game-timer-seconds').innerText;
+            const charsPerSecond = text.length/(60-seconds);
+            const charsWrapper = document.querySelector('.chars-per-second');
+            removeClass(charsWrapper, 'display-none');
+            charsWrapper.innerText = `${charsPerSecond} chars per second`
+            document.removeEventListener('keypress', reference);
+            const img = document.querySelector('.img-finished')
+            removeClass(img, 'display-none');
             socket.emit('finished_game', roomName);
-            addClass(gameTimer, 'display-none');
             textWrapper.innerHTML = '';
         }
     }
-    document.addEventListener('keypress', keyPressHandler);
+    document.addEventListener('keypress', reference);
 }

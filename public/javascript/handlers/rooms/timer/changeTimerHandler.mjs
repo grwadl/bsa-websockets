@@ -1,9 +1,6 @@
-import {addClass} from "../../helpers/domHelper.mjs";
-import {socket} from "../../game.mjs";
+import {addClass} from "../../../helpers/domHelper.mjs";
+import {socket} from "../../../game.mjs";
 
-const showText = text => {
-    console.log(text)
-}
 
 export const changeTimerHandler = number => {
     const timer = document.querySelector('#timer');

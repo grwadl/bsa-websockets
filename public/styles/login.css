@@ -1,3 +1,10 @@
+
+#login-page {
+  background-color: #2d2727;
+  flex-wrap: wrap;
+}
+
+
 .username-input-container {
   height: 39px;
   width: 240px;
@@ -5,14 +12,23 @@
 
 #username-input {
   font-size: 16px;
+  background-color: #2d2727;
+  color: white;
 }
 
 #submit-button {
   height: 39px;
   font-size: 14px;
   border: 1px solid var(--main-button-border-color);
-  background-color: var(--main-button-background-color);
+  background-color: #2d2727;
+  transition-duration: .3s;
+  color: white;
   text-transform: uppercase;
   padding: 0 15px;
   margin-left: 10px;
+}
+
+#submit-button:hover {
+  background-color: var(--main-hover);
+  transition-duration: .3s;
 }
