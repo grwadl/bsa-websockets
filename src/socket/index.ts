@@ -163,6 +163,16 @@ export default (io: Server) => {
                     rooms[index].winners = [];
             if (index !== -1 && rooms[index]?.members?.filter(item => item.isReady)?.length === rooms[index]?.members?.length && rooms[index].members?.length >= 2 && !rooms[index]?.inGame)
                 io.to(socket.id).emit('timer_render');
+        });
+
+        socket.on('change_state_false',( roomName: string) => {
+            const index: number = rooms.findIndex(room => room.name === roomName);
+            if (index >= 0) rooms[index].members = rooms[index].members.map(member => member.username !== username ? member : {
+                ...member,
+                isReady: false
+            });
+            const changedUser: IMember | undefined = rooms[index]?.members?.find(item => item.username === username);
+            io.sockets.in(roomName).emit('change_state_done', changedUser);
         })
 
         socket.on('ready_to_show_result', (roomName: string) => {
@@ -187,7 +197,10 @@ export default (io: Server) => {
                     io.sockets.in(potentialRoom.name).emit('show_result', potentialRoom!.winners);
                     rooms[index].isHidden = false;
                     rooms[index].inGame = false;
-                    rooms[index]?.members?.forEach(member => member.percent = 0);
+                    rooms[index]?.members?.forEach(member => {
+                        member.percent = 0;
+                        member.isReady = false;
+                    });
                     io.sockets.in('lobby').emit('get_rooms', rooms.filter(room => !room.isHidden && room.members.length > 0));
                 }
             }

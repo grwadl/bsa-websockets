@@ -31,6 +31,6 @@ export const onCloseModal = users => {
     document.querySelector('#text-container').innerText = '';
     const usersSortedArray = users.map(item => item.username);
     showResultsModal({usersSortedArray, onClose});
-    socket.emit('change_state', roomName);
+    socket.emit('change_state_false', roomName);
     users.forEach(user => resetUser(user))
 }

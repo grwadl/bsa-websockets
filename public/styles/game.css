@@ -114,7 +114,6 @@ span.green {
 }
 span.next {
   position: relative;
-  height: 5px;
   display: inline-block;
 }
 span.next::after {

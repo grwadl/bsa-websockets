@@ -6,6 +6,7 @@ export const joinRoomHandler = room => {
     const roomsWrapper = document.querySelector('#rooms-page');
     const gameWrapper = document.querySelector('#game-page');
     const nameOfRoom = document.querySelector('#room-name');
+    document.querySelector('#ready-btn').innerText = 'READY';
     nameOfRoom.innerText = room.room.name;
     addClass(roomsWrapper, 'display-none');
     removeClass(gameWrapper, 'display-none');
