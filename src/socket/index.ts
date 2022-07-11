@@ -22,7 +22,8 @@ export default (io: Server) => {
                 name: room,
                 members: [{username, isReady: false, percent: 0}],
                 chosedId: false,
-                isHidden: false
+                isHidden: false,
+                inGame: false
             });
             io.sockets.in('lobby').emit('add_room', {name: room, members: [username]});
             const index = rooms.findIndex(item => item.name === room);
@@ -56,14 +57,14 @@ export default (io: Server) => {
             });
             const changedUser = rooms[index]?.members?.find(item => item.username === username);
             io.sockets.in(roomName).emit('change_state_done', changedUser);
-            if (rooms[index].members.filter(item => item.isReady)?.length === rooms[index].members.length && rooms[index].members.length >= 2) { //если в комнате больше двух и все готовы начинаем игру
+            if (rooms[index]?.members.filter(item => item.isReady)?.length === rooms[index].members?.length && rooms[index].members?.length >= 2) { //если в комнате больше двух и все готовы начинаем игру
                 io.sockets.in(roomName).emit('timer_render');
             }
         });
 
         socket.on('check_if_ready', roomName => {
             const index = rooms.findIndex(room => room.name === roomName);
-            if (index !== -1 && rooms[index]?.members?.filter(item => item.isReady)?.length === rooms[index]?.members?.length && rooms[index].members?.length >= 2) {
+            if (index !== -1 && rooms[index]?.members?.filter(item => item.isReady)?.length === rooms[index]?.members?.length && rooms[index].members?.length >= 2 && !rooms[index]?.inGame) {
                 io.sockets.in(roomName).emit('timer_render');
             }
         })
@@ -74,6 +75,7 @@ export default (io: Server) => {
             rooms[index].winners = []; //нужно для обнуления результатов с прошлых матчей
             rooms[index].chosedId = false;
             rooms[index].isHidden = true;
+            rooms[index].inGame = true;
             rooms[index]?.members.forEach(member => member.percent = 0);
             let timer = SECONDS_TIMER_BEFORE_START_GAME;
 
@@ -130,6 +132,7 @@ export default (io: Server) => {
                 io.sockets.in(roomName).emit('show_result', rooms[index]?.winners);
                 rooms[index].members.forEach(member => member.percent = 0);
                 rooms[index].isHidden = rooms[index].members.length >= 5;
+                rooms[index].inGame = false;
                 io.sockets.in('lobby').emit('get_rooms', rooms.filter(room => !room.isHidden));
             }
         })
@@ -160,6 +163,7 @@ export default (io: Server) => {
             const index = rooms.findIndex(room => room.name === roomName);
             io.to(socket.id).emit('show_result', rooms[index]?.winners);
             rooms[index].members.forEach(member => member.percent = 0);
+            rooms[index].inGame = false;
             if (rooms[index].members.length < 5) {
                 rooms[index].isHidden = false;
             }
@@ -172,7 +176,10 @@ export default (io: Server) => {
             rooms.forEach(item => item.members = item.members.filter(member => member.username !== username));
             rooms.forEach(item => item.winners = item.winners?.filter(member => member.username !== username));
             if (potentialRoom) { //если все же такая комната была то уведомляем пользователей об уходе одного юзера
-                io.sockets.to([potentialRoom.name, 'lobby']).emit('refresh_room_info', {room: potentialRoom});
+                io.sockets.to(potentialRoom.name).emit('refresh_room_info', {room: potentialRoom});
+                if(!potentialRoom.inGame){
+                    io.sockets.in('lobby').emit('get_rooms', rooms.filter(room => !room.isHidden && room.members.length > 0));
+                }
                 if (potentialRoom?.members?.length === potentialRoom?.winners?.length) { //если он ушел из играющей комнаты где все кроме него уже закончили
                     const index = rooms.findIndex(room => room.name = potentialRoom.name)
                     io.sockets.in(potentialRoom.name).emit('show_result', potentialRoom!.winners);

@@ -5,6 +5,7 @@ import {changeReadyStatus, setProgress} from "../../views/user.mjs";
 
 const onClose = () => {
     const gameTimer = document.querySelector('#game-timer');
+    gameTimer.childNodes[0].innerText = '60';
     addClass(gameTimer, 'display-none');
     const buttonBack = document.querySelector('#quit-room-btn');
     const buttonToDelete = document.querySelector('#ready-btn');
