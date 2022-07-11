@@ -7,5 +7,3 @@ export const texts = [
   "Text for typing #6",
   "Text for typing #7",
 ];
-
-export default { texts };

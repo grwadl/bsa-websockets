@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+
 * {
-  font-family: "Open Sans", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   line-height: normal;
   color: var(--main-font-color);
 }
@@ -13,6 +15,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.user-result {
+  margin: 10px;
+  font-size: 18px;
 }
 
 .flex {
@@ -41,12 +48,19 @@ input::placeholder {
 }
 
 :root {
-  --main-font-color: #333;
-  --main-button-background-color: lightgrey;
+  --main-font-color: white;
+  --main-button-background-color: #2d2727;
   --main-button-border-color: #999;
   --input-border-color: #999;
   --input-placeholder-color: #888;
   --white: #fff;
+  --main-hover: #3f3d3d;
+}
+
+.modal-input {
+  background-color: var(--main-button-background-color);
+  padding: 10px;
+  font-size: 18px;
 }
 
 .title {
@@ -55,15 +69,16 @@ input::placeholder {
 
 .modal {
   width: 30vw;
-  max-height: 30vh;
+  padding: 20px;
   box-shadow: 5px 10px 8px #888888;
   position: absolute;
   top: 10vh;
-  background-color: var(--white);
+  background-color: var(--main-button-background-color);
   left: 35vw;
   border: 1px solid var(--main-button-border-color);
   border-radius: 10px;
 }
+
 
 .modal .inputs-wrapper {
   display: flex;
@@ -74,8 +89,15 @@ input::placeholder {
 .modal button {
   border: 1px solid var(--main-button-border-color);
   background-color: var(--main-button-background-color);
-  padding: 0px 10px;
-  margin: 0px 5px;
+  padding: 10px;
+  font-size: 18px;
+  margin: 0 5px;
+  transition-duration: .3s;
+}
+
+.modal button:hover {
+  background-color: var(--main-hover);
+  transition-duration: .3s;
 }
 
 .modal .body-wrapper {

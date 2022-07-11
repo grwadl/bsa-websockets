@@ -15,7 +15,7 @@ routes(app);
 
 app.get('*', (req, res) => res.redirect('/login'));
 
-socketHandler(socketIo);
+socketHandler(socketIo)
 
 httpServer.listen(PORT, () => console.log(`Listen server on port ${PORT}`));
 
