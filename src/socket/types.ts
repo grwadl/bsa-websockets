@@ -8,6 +8,7 @@ export interface IRoom {
     name: string,
     members: IMember[],
     winners?: IMember[],
+    inGame: boolean
     chosedId: number | boolean,
     isHidden: boolean
 }

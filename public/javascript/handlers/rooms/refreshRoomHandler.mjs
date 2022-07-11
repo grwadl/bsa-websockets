@@ -2,6 +2,7 @@
 import {appendUserElement, setProgress} from "../../views/user.mjs";
 import {updateNumberOfUsersInRoom} from "../../views/room.mjs";
 import {removeClass} from "../../helpers/domHelper.mjs";
+import {socket} from "../../game.mjs";
 
 const memberRefresher = member => {
     const username = sessionStorage.getItem('username');
@@ -14,6 +15,8 @@ export const refreshRoomHandler = (room) => {
     const roomItem = document.querySelector(`[data-room-name='${room.room.name}']`);
     removeClass(roomItem, 'display-none');
     const userList = document.querySelector('#users-wrapper');
+    const roomName = document.querySelector('#room-name').innerText;
+    socket.emit('check_if_ready', roomName);
     userList.innerHTML = '';
     room.room.members.forEach(member => memberRefresher(member));
 }

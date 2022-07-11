@@ -26,7 +26,7 @@ export const startGameHandler = id => {
     const keyPressHandler = e => {
         if(e.key === text[counter]) {
             textWrapper.childNodes[counter].classList.add('green');
-            socket.emit('pressed_key', {percentage: (counter)*100 / (text.length-1), roomName});
+            socket.emit('pressed_key', {percentage: (counter+1)*100 / (text.length), roomName});
             counter++;
         }
         if(counter === text?.length) {
