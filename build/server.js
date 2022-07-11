@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const http_1 = __importDefault(require("http"));
+const socket_io_1 = require("socket.io");
+const socket_1 = __importDefault(require("./socket"));
+const routes_1 = __importDefault(require("./routes"));
+const config_1 = require("./config");
+const app = (0, express_1.default)();
+const httpServer = new http_1.default.Server(app);
+const socketIo = new socket_io_1.Server(httpServer);
+app.use(express_1.default.static(config_1.STATIC_PATH));
+(0, routes_1.default)(app);
+app.get('*', (req, res) => res.redirect('/login'));
+(0, socket_1.default)(socketIo);
+httpServer.listen(config_1.PORT, () => console.log(`Listen server on port ${config_1.PORT}`));
+exports.default = { app, httpServer };
