@@ -24,7 +24,7 @@ if (!username) {
 	window.location.replace('/login');
 }
 
-export const socket = io('host=bsa-websockets.herokuapp.com', { query: { username } });
+export const socket = io('https://bsa-websockets.herokuapp.com/', { query: { username } });
 
 
 document.querySelector('.title').innerText += ` [Username: ${username}]`;
