@@ -7,6 +7,17 @@
   border: 1px solid dimgray;
   background-color: var(--main-button-background-color);
   margin: 10px 25px;
+  transition-duration: .3s;
+}
+
+#rooms-page.opened-modal::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.6);
 }
 
 .room {
@@ -30,4 +41,10 @@
   background-color:var(--main-button-background-color);
   border: 1px solid var(--main-button-border-color);
   padding: 5px 20px;
+  transition-duration: .3s;
+}
+
+.join-btn:hover,  #add-room-btn:hover {
+  background-color: var(--main-hover);
+  transition-duration: .3s;
 }

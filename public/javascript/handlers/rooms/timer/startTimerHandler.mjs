@@ -1,5 +1,5 @@
-import {socket} from "../../game.mjs";
-import {addClass, removeClass} from "../../helpers/domHelper.mjs";
+import {socket} from "../../../game.mjs";
+import {addClass, removeClass} from "../../../helpers/domHelper.mjs";
 
 export const startTimerHandler = () => {
     const name = document.querySelector('#room-name').innerText;

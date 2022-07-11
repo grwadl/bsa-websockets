@@ -1,5 +1,5 @@
-import {socket} from "../../game.mjs";
-import {addClass, removeClass} from "../../helpers/domHelper.mjs";
+import {socket} from "../../../game.mjs";
+import {addClass, removeClass} from "../../../helpers/domHelper.mjs";
 
 export const leaveRoom = () => {
     const nameOfRoom = document.querySelector('#room-name');

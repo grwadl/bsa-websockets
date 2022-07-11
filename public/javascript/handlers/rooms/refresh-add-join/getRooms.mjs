@@ -1,4 +1,4 @@
-import {appendRoomElement} from "../../views/room.mjs";
+import {appendRoomElement} from "../../../views/room.mjs";
 import {onJoin} from "./addCreated.mjs";
 
 export const getRoomsHandler = rooms => {

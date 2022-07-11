@@ -1,5 +1,5 @@
-import {updateNumberOfUsersInRoom} from "../../views/room.mjs";
-import {addClass, removeClass} from "../../helpers/domHelper.mjs";
+import {updateNumberOfUsersInRoom} from "../../../views/room.mjs";
+import {addClass, removeClass} from "../../../helpers/domHelper.mjs";
 
 export const joinRoomHandler = room => {
     updateNumberOfUsersInRoom({name: room.room.name, numberOfUsers: room.room.members.length});

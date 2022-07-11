@@ -3,6 +3,19 @@
   border: 1px solid var(--main-button-border-color);
   background-color: var(--main-button-background-color);
   margin: 10px;
+  transition-duration: .3s;
+}
+#quit-room-btn:hover {
+  background-color: var(--main-hover);
+  transition-duration: .3s;
+}
+
+.img-finished {
+  width: 200px;
+}
+
+#root {
+  background-color: var(--main-button-background-color);
 }
 
 #room-name {
@@ -28,6 +41,12 @@
   width: 200px;
   font-size: large;
   font-weight: bold;
+  transition-duration: .3s;
+}
+
+#ready-btn:hover {
+  background-color: var(--main-hover);
+  transition-duration: .3s;
 }
 
 #timer {
@@ -46,7 +65,7 @@
 
 .user-header {
   display: flex;
-  margin: 5px 0px;
+  margin: 5px 0;
 }
 
 .user {
@@ -92,4 +111,23 @@
 span.green {
   background-color: darkgreen;
   color: white;
+}
+span.next {
+  position: relative;
+  height: 5px;
+  display: inline-block;
+}
+span.next::after {
+  position: absolute;
+  content: '';
+  width: 10px;
+  height: 3px;
+  bottom: 0;
+  left: 0;
+  background-color: greenyellow;
+}
+.chars-per-second {
+  position: absolute;
+  top: 8px;
+  left: 20px;
 }
